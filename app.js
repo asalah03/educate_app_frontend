@@ -6,7 +6,7 @@ const app = Vue.createApp({
   data() {
     return {
       // Backend API base (change if your Render URL changed)
-      apiBase: "https://educate-app-backend.onrender.com",
+      apiBase: "https://educate-app-backend.onrender.com/api",
 
       // Which page is shown: "lessons" or "cart"
       view: "lessons",
