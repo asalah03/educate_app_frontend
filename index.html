@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Lessons to Learn</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Bootstrap + FontAwesome -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    rel="stylesheet"
+  />
+
+  <!-- external CSS (keeps design / colours / cards) -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <!-- Vue controls everything inside #app -->
+  <div id="app" class="container-fluid p-0">
+    <!-- ============ NAVBAR ============ -->
+    <nav class="navbar navbar-dark px-3 py-2">
+      <a
+        href="#"
+        class="navbar-brand text-white fw-bold"
+        @click.prevent="go('lessons')"
+      >
+        Lessons to Learn
+      </a>
+
+      <button
+        class="btn btn-outline-light"
+        :disabled="!cartCount"
+        :title="cartCount ? 'Open cart' : 'Cart is empty'"
+        @click="go(view === 'cart' ? 'lessons' : 'cart')"
+      >
+        <i class="fa fa-shopping-basket"></i>
+        <span v-if="cartCount">({{ cartCount }})</span>
+      </button>
+    </nav>
+
+    <div class="container py-4">
+      <!-- ==============================
+           LESSONS PAGE (view === 'lessons')
+           ============================== -->
+      <section v-if="view === 'lessons'">
+        <!-- Header row: title + sort controls -->
+        <div class="d-flex flex-wrap align-items-end gap-3 mb-3">
+          <div>
+            <h2 class="mb-1">Available Lessons</h2>
+            <p class="text-muted mb-0">
+              Browse lessons, sort them, and add seats to your cart.
+            </p>
+          </div>
+
+          <!-- Sort controls -->
+          <div class="ms-auto d-flex flex-wrap align-items-center gap-2">
+            <label class="form-label mb-0">Sort by:</label>
+            <select
+              v-model="sortAttribute"
+              class="form-select form-select-sm w-auto"
+            >
+              <option value="subject">Subject</option>
+              <option value="location">Location</option>
+              <option value="price">Price</option>
+              <option value="spaces">Spaces</option>
+            </select>
+
+            <label class="form-label mb-0 ms-2">Order:</label>
+            <select
+              v-model="sortDir"
+              class="form-select form-select-sm w-auto"
+            >
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Search bar (search as you type) -->
+        <div class="mb-3">
+          <input
+            type="text"
+            v-model="searchQuery"
+            class="form-control"
+            placeholder="Search by subject, location, price, or spaces..."
+          />
+        </div>
+
+        <!-- Lessons list as cards -->
+        <div class="row">
+          <div
+            class="col-sm-6 col-md-4 col-lg-3 mb-3"
+            v-for="lesson in displayedLessons"
+            :key="lesson.subject + '|' + lesson.location"
+          >
+            <div class="card subject-card h-100 d-flex flex-column">
+              <!-- Lesson image -->
+              <img
+                :src="imageUrl(lesson.image)"
+                class="subject-thumb"
+                :alt="lesson.subject + ' image'"
+              />
+
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title mb-1">{{ lesson.subject }}</h5>
+                <p class="card-text mb-1">
+                  <i class="fa fa-location-dot me-1"></i>
+                  {{ lesson.location }}
+                </p>
+                <p class="card-text mb-1">
+                  <strong>£{{ lesson.price }}</strong>
+                </p>
+                <p class="card-text mb-2">
+                  Spaces left:
+                  <span
+                    :class="{
+                      'text-danger fw-semibold': lesson.spaces === 0,
+                      'text-warning fw-semibold': lesson.spaces > 0 && lesson.spaces <= 2
+                    }"
+                  >
+                    {{ lesson.spaces }}
+                  </span>
+                </p>
+
+                <div class="mt-auto">
+                  <button
+                    class="btn btn-primary w-100"
+                    :disabled="lesson.spaces === 0"
+                    @click="addToCart(lesson)"
+                  >
+                    <span v-if="lesson.spaces > 0">
+                      <i class="fa fa-cart-plus me-1"></i>
+                      Add to Cart
+                    </span>
+                    <span v-else>
+                      <i class="fa fa-ban me-1"></i>
+                      Out of Stock
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- If no lessons match the search -->
+          <div v-if="!displayedLessons.length" class="col-12">
+            <div class="alert alert-info">
+              No lessons match your search. Try a different word.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==============================
+           CART PAGE (view === 'cart')
+           ============================== -->
+      <section v-if="view === 'cart'">
+        <h2 class="mb-3">Your Shopping Cart</h2>
+
+        <!-- Empty cart message -->
+        <div v-if="!cart.length" class="alert alert-warning">
+          Your cart is empty. Go back to the lessons page to add some seats.
+        </div>
+
+        <!-- Cart items list -->
+        <div v-else>
+          <ul class="list-group mb-3">
+            <li
+              v-for="(item, index) in cart"
+              :key="index"
+              class="list-group-item d-flex justify-content-between align-items-center"
+            >
+              <div>
+                <strong>{{ item.subject }}</strong>
+                <span class="text-muted">({{ item.location }})</span>
+                – £{{ item.price }}
+              </div>
+
+              <button
+                class="btn btn-sm btn-outline-secondary"
+                @click="removeOne(index, item)"
+              >
+                Remove
+              </button>
+            </li>
+          </ul>
+
+          <!-- Cart summary -->
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="mb-0">
+              Total: £{{ cartTotal }} ({{ cartCount }} item<span v-if="cartCount !== 1">s</span>)
+            </h5>
+            <button
+              class="btn btn-secondary"
+              type="button"
+              @click="go('lessons')"
+            >
+              Back to Lessons
+            </button>
+          </div>
+
+          <!-- Checkout form (part of cart page) -->
+          <h3 class="mb-3">Checkout</h3>
+
+          <form
+            class="col-md-6 p-0 mb-3"
+            @submit.prevent="checkout"
+          >
+            <div class="mb-3">
+              <label class="form-label">Name</label>
+              <input
+                v-model="customer.name"
+                class="form-control"
+                placeholder="Your full name"
+                required
+              />
+              <small class="text-muted">Letters and spaces only.</small>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Phone</label>
+              <input
+                v-model="customer.phone"
+                class="form-control"
+                placeholder="07..."
+                required
+              />
+              <small class="text-muted">Digits only, no spaces or symbols.</small>
+            </div>
+
+            <button
+              class="btn btn-success"
+              type="submit"
+              :disabled="!isCheckoutValid"
+            >
+              Submit Order
+            </button>
+          </form>
+
+          <!-- Order confirmation -->
+          <div
+            v-if="orderMessage"
+            class="alert alert-success mt-2"
+          >
+            {{ orderMessage }}
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Vue and app.js -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
