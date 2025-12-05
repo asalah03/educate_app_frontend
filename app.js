@@ -1,5 +1,5 @@
 // ===================================
-// Educate App Frontend (Vue 3)
+// Educate App Frontend 
 // ===================================
 
 const app = Vue.createApp({
