@@ -5,10 +5,10 @@
 const app = Vue.createApp({
   data() {
     return {
-      // Backend API base (change if your Render URL changed)
+      // Backend API base
       apiBase: "https://educate-app-backend.onrender.com/api",
 
-      // Which page is shown: "lessons" or "cart"
+      // Which page is shown 
       view: "lessons",
 
       // Search text (search as you type)
@@ -27,7 +27,7 @@ const app = Vue.createApp({
       // Each item: { subject, location, price }
       cart: [],
 
-      // Checkout form inputs
+      // Checkout form 
       customer: {
         name: "",
         phone: ""
@@ -75,7 +75,7 @@ const app = Vue.createApp({
     // SORT: sort the searched lessons
     // =====================================
     sortedLessons() {
-      // work on a copy so we don't mutate searchedLessons directly
+      // i work on a copy so i don't mutate searchedLessons directly
       const list = [...this.searchedLessons];
 
       list.sort((a, b) => {
@@ -87,7 +87,7 @@ const app = Vue.createApp({
         return 0;
       });
 
-      // If user chooses descending, reverse the sorted list
+      // If user chooses descending, the order list gets reversed 
       if (this.sortDir === "desc") {
         list.reverse();
       }
@@ -96,7 +96,7 @@ const app = Vue.createApp({
     },
 
     // =====================================
-    // FINAL LIST: lessons shown on page
+    // FINAL LIST: The final lessons displayed on the page
     // =====================================
     displayedLessons() {
       // For the template we only need the final sorted + searched list
@@ -124,16 +124,16 @@ const app = Vue.createApp({
   },
 
   methods: {
-    // ============================
+    // ==================
     // VIEW / NAVIGATION
-    // ============================
+    // ==================
     go(page) {
       this.view = page;
     },
 
-    // ============================
-    // SORT HELPER
-    // ============================
+    // ================
+    // HELPER FOR SORT
+    // ================
     getSortValue(lesson) {
       if (this.sortAttribute === "subject") {
         return String(lesson.subject || "").toLowerCase();
@@ -150,9 +150,9 @@ const app = Vue.createApp({
       return 0;
     },
 
-    // ============================
-    // IMAGE URL HELPER
-    // ============================
+    // ===========
+    // IMAGE URL 
+    // ===========
     backendOrigin() {
       try {
         return new URL(this.apiBase).origin;
@@ -179,8 +179,6 @@ const app = Vue.createApp({
         const res = await fetch(this.apiBase + "/lessons");
         if (!res.ok) throw new Error("Failed to fetch lessons");
         const data = await res.json();
-
-        // Expecting: [{ subject, location, price, spaces, image }, ...]
         this.lessons = data;
       } catch (err) {
         console.error("Could not load lessons:", err);
@@ -267,7 +265,7 @@ const app = Vue.createApp({
             body: JSON.stringify({
               subject: item.subject,
               location: item.location,
-              spaces: lesson.spaces     // current spaces value on frontend
+              spaces: lesson.spaces     
             })
           });
         }

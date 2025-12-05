@@ -1,13 +1,13 @@
 /* GLOBAL PAGE STYLING */
 body {
   background-color: #f8fafc;
-  color: #1e293b;
+  color: #1a263a;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* NAVBAR */
 .navbar {
-  background-color: #1e293b !important;
+  background-color: #1e2a3d !important;
 }
 
 /* SUBJECT CARDS */

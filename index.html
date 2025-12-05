@@ -15,7 +15,7 @@
     rel="stylesheet"
   />
 
-  <!-- external CSS (keeps design / colours / cards) -->
+  <!-- CSS -->
   <link rel="stylesheet" href="styles.css" />
 </head>
 
@@ -44,9 +44,9 @@
     </nav>
 
     <div class="container py-4">
-      <!-- ==============================
-           LESSONS PAGE (view === 'lessons')
-           ============================== -->
+      <!-- ==============
+           LESSONS PAGE 
+           ==============-->
       <section v-if="view === 'lessons'">
         <!-- Header row: title + sort controls -->
         <div class="d-flex flex-wrap align-items-end gap-3 mb-3">
@@ -156,9 +156,9 @@
         </div>
       </section>
 
-      <!-- ==============================
-           CART PAGE (view === 'cart')
-           ============================== -->
+      <!-- ===========
+           CART PAGE 
+           ===========-->
       <section v-if="view === 'cart'">
         <h2 class="mb-3">Your Shopping Cart</h2>
 
