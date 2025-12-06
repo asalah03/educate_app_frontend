@@ -19,7 +19,7 @@ const app = Vue.createApp({
       sortAttribute: "subject",
       sortDir: "asc",
 
-      // List of lessons loaded from backend
+      // The List of lessons loaded from backend
       // Each lesson: { subject, location, price, spaces, image }
       lessons: [],
 
